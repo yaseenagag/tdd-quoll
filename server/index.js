@@ -30,6 +30,14 @@ server.post('/api/books', (request, response, next) => {
   }
 })
 
+server.get('/api/books', (request, response, next) => {
+  let page = ( parseInt (request.query.page)) || 1
+  db.getBooks(page).then((books, page) => {
+    response.status(200).json(books)
+  })
+})
+
+
 if (process.env.NODE_ENV !== 'test'){
   server.listen(server.get('port'))
 }
