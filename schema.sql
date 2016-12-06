@@ -31,5 +31,5 @@ DROP TABLE if EXISTS book_genres;
 
 CREATE TABLE book_genres (
   book_id INTEGER NOT NULL,
-  genere_id INTEGER NOT NULL
+  genre_id INTEGER NOT NULL
 );
