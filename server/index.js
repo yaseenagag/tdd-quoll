@@ -18,6 +18,18 @@ server.post('/api/test/reset-db', (request, response, next) => {
   })
 })
 
+server.post('/api/books', (request, response, next) => {
+  if ( request.body.hasOwnProperty("title") ) {
+    db.createWholeBook(request.body).then(book => {
+      response.status(201).json(book).end
+    })
+  } else {
+    response.status(400).json({
+      error: {message: 'title cannot be blank'}
+    })
+  }
+})
+
 if (process.env.NODE_ENV !== 'test'){
   server.listen(server.get('port'))
 }
