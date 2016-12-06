@@ -60,5 +60,23 @@ const createWholeBook = book => {
     })
 }
 
+const getBooks = (page = 1) => {
+  const offset = (page-1) * 10
+  return pgpdb.query(`
+    select books.id,
+      books.title,
+      books.year,
+      authors.name as author,
+      json_agg(genres.name order by genres.name asc) as genres
+    from books
+      join book_genres on books.id = book_genres.book_id
+      join genres on book_genres.genre_id = genres.id
+      join book_authors on books.id = book_authors.book_id
+      join authors on book_authors.book_id = authors.id
+    group by books.id, title, year, author
+    limit 10 offset $1
+    `, [offset])
+}
 
-module.exports = { resetDb, createWholeBook }
+
+module.exports = { resetDb, createWholeBook, getBooks }
