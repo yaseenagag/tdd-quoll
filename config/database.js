@@ -1,5 +1,6 @@
 const pgp = require( 'pg-promise' )()
 const pgpdb = pgp({ database: 'quoll' })
+const SQL = require( './sql_strings' )
 
 const resetDb = () => {
   return Promise.all([
@@ -9,6 +10,10 @@ const resetDb = () => {
     pgpdb.query('delete from book_authors'),
     pgpdb.query('delete from book_genres'),
   ])
+}
+
+const deleteBook = () => {
+  return pgpdb.query('delete from books where id = $1')
 }
 
 const createBook = (title, year) => {
@@ -78,5 +83,8 @@ const getBooks = (page = 1) => {
     `, [offset])
 }
 
+const getBook = id => {
+  return pgpdb.query( `select books.*, ${SQL.GENRES_SUBQUERY} as genres, ${SQL.AUTHORS_SUBQUERY} as author from books where id=$1`, id )
+}
 
-module.exports = { resetDb, createWholeBook, getBooks }
+module.exports = { resetDb, createWholeBook, getBooks, getBook }
