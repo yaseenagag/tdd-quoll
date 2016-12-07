@@ -32,9 +32,24 @@ server.post('/api/books', (request, response, next) => {
 
 server.get('/api/books', (request, response, next) => {
   let page = ( parseInt (request.query.page)) || 1
-  db.getBooks(page).then((books, page) => {
-    response.status(200).json(books)
-  })
+  db.getBooks(page).then((books, page) =>
+    response.status(200).json(books))
+})
+
+server.get( '/api/books/:id', ( request, response ) => {
+  database.getBook( request.params.id )
+    .then( book => response.json( book))
+    .catch( error => response.status( 404 ).json() )
+})
+
+server.get( '/api/authors', ( request, response ) => {
+  database.getAuthors( request.query )
+    .then( result => response.json( result ))
+})
+
+server.get( '/api/genres', ( request, response ) => {
+  database.getGenres( request.query )
+    .then( result => response.json( result ))
 })
 
 
