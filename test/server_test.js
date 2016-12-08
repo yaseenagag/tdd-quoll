@@ -158,7 +158,7 @@ describe('HTTP Server', () => {
     })
 
     describe('GET /api/books?title=wORld', () => {
-      it('should render books with a title including "world" (case insensitive)', () => {
+      it.only('should render books with a title including "world" (case insensitive)', () => {
         return request('get', '/api/books?title=wORld').then(response => {
           expectResponseToHaveStatus(response, 200)
           const books = response.body
