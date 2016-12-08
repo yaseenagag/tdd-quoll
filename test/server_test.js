@@ -153,6 +153,7 @@ describe('HTTP Server', () => {
             "Ubik",
           ])
         })
+        .catch(error => console.log('ERROR', error))
       })
     })
 
