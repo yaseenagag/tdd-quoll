@@ -65,18 +65,48 @@ const createWholeBook = book => {
     })
 }
 
-const getBooks = ({page,title,author}) => {
-  page = parseInt(page) || 1
-  const offset = (page-1) * 10
-  title = `%${title.toLowerCase()}%`
-  console.log(title)
-  return pgpdb.query(`
-    select books.*
-    from books
-    where
-      LOWER(books.title) like $2
-    limit 10 offset $1
-    `, [offset,title])
+const BOOKS_QUERY =
+  `SELECT books.*,
+    (SELECT authors.name FROM authors, book_authors WHERE book_authors.book_id=books.id AND book_authors.author_id=authors.id LIMIT 1) AS author,
+    array(SELECT genres.name FROM genres, book_genres WHERE book_genres.book_id=books.id AND book_genres.genre_id=genres.id ORDER BY genres.name ASC) AS genres
+  FROM books`
+
+const getBooks = ({page, title, author, year}) => {
+  page = parseInt( page || 1 )
+  const offset = ( page - 1 ) * 10
+
+  let params = [ offset ]
+  let index = 1
+  let clauses = []
+
+  if( title !== undefined ) {
+    clauses.push( `books.title ILIKE '%\$${++index}^%' ` )
+    params.push( title )
+  }
+
+  if( author !== undefined ) {
+    clauses.push( `(SELECT authors.name FROM authors, book_authors WHERE book_authors.book_id=books.id AND book_authors.author_id=authors.id LIMIT 1)  ILIKE '%\$${++index}^%' ` )
+    params.push( author )
+  }
+
+  if( year !== undefined ) {
+    clauses.push( `books.year=\$${++index} ` )
+    params.push( year )
+  }
+
+  query = `${BOOKS_QUERY} ${clauses.length > 0 ? `WHERE ${clauses.join( ' AND ' )}` : ''} LIMIT 10 OFFSET $1`
+
+  return pgpdb.query( query, params )
+
+  // title = `%${title.toLowerCase()}%`
+  // console.log(title)
+  // return pgpdb.query(`
+  //   select books.*
+  //   from books
+  //   where
+  //     LOWER(books.title) like $2
+  //   limit 10 offset $1
+  //   `, [offset,title])
 }
 
 const searchByAuthor = id => {
