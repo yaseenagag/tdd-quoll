@@ -94,6 +94,7 @@ const getBooks = ({page, title, author, year}) => {
     params.push( year )
   }
 
+
   query = `${BOOKS_QUERY} ${clauses.length > 0 ? `WHERE ${clauses.join( ' AND ' )}` : ''} LIMIT 10 OFFSET $1`
 
   return pgpdb.query( query, params )
@@ -108,6 +109,10 @@ const getBooks = ({page, title, author, year}) => {
   //   limit 10 offset $1
   //   `, [offset,title])
 }
+
+const getAuthors = ({page, author}) => {
+  return pgpdb.query(`SELECT authors.name FROM authors LIMIT 10`)
+  }
 
 const searchByAuthor = id => {
   return pgpdb.query(`
@@ -133,4 +138,4 @@ const searchByTitle = id => {
 }
 
 
-module.exports = { resetDb, createWholeBook, getBooks, searchByAuthor, searchByTitle }
+module.exports = { resetDb, createWholeBook, getBooks, searchByAuthor, searchByTitle, getAuthors }
