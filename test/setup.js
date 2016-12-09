@@ -40,8 +40,8 @@ global.request = (method, path, postBody) => {
     if (method === 'post' && postBody) req = req.send(postBody)
     req.end((error, response) => {
       if (error && error.status >= 500) {
-        console.warn('Server Error: '+response.body.error.message)
-        console.warn(response.body.error.stack)
+        console.warn('Server Error: '+error.message)
+        console.warn(error.stack)
         reject(error)
       }else{
         response.request = {

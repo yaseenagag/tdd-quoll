@@ -207,7 +207,7 @@ describe('HTTP Server', () => {
     })
 
     describe('GET /api/authors', () => {
-      it.only('should render 10 authors', () => {
+      it('should render 10 authors', () => {
         return request('get', '/api/authors').then(response => {
           expectResponseToHaveStatus(response, 200)
           expect(response.headers['content-type']).to
