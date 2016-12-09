@@ -65,26 +65,42 @@ const createWholeBook = book => {
     })
 }
 
-const getBooks = (page = 1) => {
+const getBooks = ({page,title,author}) => {
+  page = parseInt(page) || 1
   const offset = (page-1) * 10
+  title = `%${title.toLowerCase()}%`
+  console.log(title)
   return pgpdb.query(`
-    select books.id,
-      books.title,
-      books.year,
-      authors.name as author,
-      json_agg(genres.name order by genres.name asc) as genres
+    select books.*
     from books
-      join book_genres on books.id = book_genres.book_id
-      join genres on book_genres.genre_id = genres.id
-      join book_authors on books.id = book_authors.book_id
-      join authors on book_authors.book_id = authors.id
-    group by books.id, title, year, author
+    where
+      LOWER(books.title) like $2
     limit 10 offset $1
-    `, [offset])
+    `, [offset,title])
 }
 
-const getBook = id => {
-  return pgpdb.query( `select books.*, ${SQL.GENRES_SUBQUERY} as genres, ${SQL.AUTHORS_SUBQUERY} as author from books where id=$1`, id )
+const searchByAuthor = id => {
+  return pgpdb.query(`
+  SELECT DISTINCT books.*
+  FROM books
+  LEFT JOIN book_authors
+  ON books.id=book_authors.book_id
+  LEFT JOIN authors
+  ON authors.id=book_authors.author_id
+  LEFT JOIN book_genres
+  ON books.id=book_genres.book_id
+  LEFT JOIN genres
+  ON genres.id=book_genres.genre_id
+  WHERE authors.id=$1
+  `)
+}
+const searchByTitle = id => {
+  return pgpdb.query(`
+    SELECT *
+    FROM books
+    WHERE books.title Like '%\${title^}%'
+  `)
 }
 
-module.exports = { resetDb, createWholeBook, getBooks, getBook }
+
+module.exports = { resetDb, createWholeBook, getBooks, searchByAuthor, searchByTitle }

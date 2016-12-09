@@ -31,18 +31,29 @@ server.post('/api/books', (request, response, next) => {
 })
 
 server.get('/api/books', (request, response, next) => {
-  let page = ( parseInt (request.query.page)) || 1
-  const id = request.params.id
-  const {author} = request.query
-  db.getBooks(page).then((books, page) =>
-    response.status(200).json(books))
+  db.getBooks(request.query)
+    .then((books) => {
+      response.status(200).json(books)
+    })
+    .catch(error => {
+      console.error(error)
+      response.status(500).json({error})
+    })
 })
-
-// server.get( '/api/books/:id', ( request, response ) => {
-//   database.getBook( request.params.id )
-//     .then( book => response.json( book))
-//     .catch( error => response.status( 404 ).json() )
+//
+// server.get('/api/books', (request, response, next) => {
+//   let page = ( parseInt (request.query.page)) || 1
+//   const id = request.params.id
+//   const {title} = request.query
+//   db.getBooks(page).then((books, page) =>
+//     response.status(200).json(books))
 // })
+
+server.get( '/api/books/:id', ( request, response ) => {
+  database.getBook( request.params.id )
+    .then( book => response.json( book))
+    .catch( error => response.status( 404 ).json() )
+})
 
 server.get( '/api/authors', ( request, response ) => {
   database.getAuthors( request.query )
