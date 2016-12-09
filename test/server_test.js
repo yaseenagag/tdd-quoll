@@ -153,12 +153,12 @@ describe('HTTP Server', () => {
             "Ubik",
           ])
         })
-        .catch(error => console.log('ERROR', error))
+        // .catch(error => console.log('ERROR', error))
       })
     })
 
     describe('GET /api/books?title=wORld', () => {
-      it.only('should render books with a title including "world" (case insensitive)', () => {
+      it('should render books with a title including "world" (case insensitive)', () => {
         return request('get', '/api/books?title=wORld').then(response => {
           expectResponseToHaveStatus(response, 200)
           const books = response.body
@@ -207,7 +207,7 @@ describe('HTTP Server', () => {
     })
 
     describe('GET /api/authors', () => {
-      it('should render 10 authors', () => {
+      it.only('should render 10 authors', () => {
         return request('get', '/api/authors').then(response => {
           expectResponseToHaveStatus(response, 200)
           expect(response.headers['content-type']).to
