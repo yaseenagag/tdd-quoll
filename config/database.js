@@ -71,13 +71,22 @@ const BOOKS_QUERY =
     array(SELECT genres.name FROM genres, book_genres WHERE book_genres.book_id=books.id AND book_genres.genre_id=genres.id ORDER BY genres.name ASC) AS genres
   FROM books`
 
-const getBooks = ({page, title, author, year}) => {
+const getBook = (id) => {
+  return pgpdb.one(`SELECT * FROM books LIMIT 1 OFFSET ${id}`)
+}
+
+const getBooks = ({page, title, author, year, count}) => {
   page = parseInt( page || 1 )
   const offset = ( page - 1 ) * 10
 
   let params = [ offset ]
   let index = 1
   let clauses = []
+
+  if(count !== undefined ) {
+    clauses.push( `SELECT books.id FROM books LIMIT 1 OFFSET $1` , [count])
+    params.push( count )
+  }
 
   if( title !== undefined ) {
     clauses.push( `books.title ILIKE '%\$${++index}^%' ` )
