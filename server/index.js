@@ -45,6 +45,7 @@ server.get('/api/books', (request, response, next) => {
   let page = ( parseInt (request.query.page)) || 1
   const id = request.params.id
   const {title} = request.query
+
   db.getBooks(page).then((books, page) =>
     response.status(200).json(books))
 })

@@ -226,6 +226,7 @@ describe('HTTP Server', () => {
         ]).then(([page1Request, page2Request]) => {
           const page1Authors = page1Request.body
           const page2Authors = page2Request.body
+
           expect(page1Authors.length).to.eql(10)
           expect(page2Authors.length).to.eql(10)
 

@@ -82,6 +82,7 @@ const getBooks = ({page, title, author, year}) => {
   if( title !== undefined ) {
     clauses.push( `books.title ILIKE '%\$${++index}^%' ` )
     params.push( title )
+
   }
 
   if( author !== undefined ) {
@@ -111,7 +112,9 @@ const getBooks = ({page, title, author, year}) => {
 }
 
 const getAuthors = ({page, author}) => {
-  return pgpdb.query(`SELECT authors.name FROM authors LIMIT 10`)
+  page = parseInt( page || 1 )
+  const offset = ( page - 1 ) * 10
+  return pgpdb.query(`SELECT authors.name, authors.id FROM authors LIMIT 10 OFFSET $1`, [offset])
   }
 
 const searchByAuthor = id => {
